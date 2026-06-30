@@ -68,7 +68,9 @@ class _MyCubeState extends State<MyCube> {
       child: Cube(
         controller: controller,
         // Enable drag-to-turn. Dragging off the cube orbits the view.
-        onMove: (move) => debugPrint('turned $move'),
+        onMove: (move){
+          controller.applyMoveInstant(move),
+          debugPrint('turned $move'),}
         // Enable tap-to-select. Reports the front-most face under the tap.
         onFaceTap: (face) => debugPrint('tapped $face'),
       ),

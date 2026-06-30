@@ -10,3 +10,8 @@
   and finger-following drag-to-turn (snaps to the nearest quarter-turn), plus
   queued/animated moves and `playSequence`.
 - `CubeColorValidator` — validates whether a colouring is a real, solvable cube.
+
+## 0.1.1
+
+- Fix bug in example for drag to move not working
+- Map to public Github Repository
