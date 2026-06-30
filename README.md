@@ -79,7 +79,7 @@ class _MyCubeState extends State<MyCube> {
 }
 ```
 
-![Interactive puzzle cube demo](img/puzzle_cube_gif.gif)
+![Interactive puzzle cube demo](https://raw.githubusercontent.com/Absoulte-Devs/puzzle_cube/main/img/puzzle_cube_gif.gif)
 
 Buttons can drive the same controller:
 
