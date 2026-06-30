@@ -10,4 +10,3 @@
   and finger-following drag-to-turn (snaps to the nearest quarter-turn), plus
   queued/animated moves and `playSequence`.
 - `CubeColorValidator` — validates whether a colouring is a real, solvable cube.
-- `FaceColorScanner` — turns a photo of one face into its 9 sticker colours.

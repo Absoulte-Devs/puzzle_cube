@@ -21,9 +21,9 @@ The 3D rendering is built on [`ditredi`](https://pub.dev/packages/ditredi).
   - **Tap-to-select** the front-most face under the tap (never falls through to
     the hidden side).
   - Animated, queued moves and `playSequence` for algorithms.
+  - A display-only mode (`enableGestures: false`) for non-interactive renders.
 - `CubeColorValidator` — checks whether a colouring could be a real, solvable
   cube (centres fixed, valid edge/corner combinations, nine of each colour).
-- `FaceColorScanner` — turns a photo of one face into its 9 sticker colours.
 
 ## Getting started
 
@@ -49,6 +49,7 @@ class MyCube extends StatefulWidget {
 
 class _MyCubeState extends State<MyCube> {
   final controller = CubeController(
+    moveDuration: const Duration(milliseconds: 350),
     initialViewRotationX: -0.5,
     initialViewRotationY: 0.6,
   );
@@ -68,6 +69,8 @@ class _MyCubeState extends State<MyCube> {
         controller: controller,
         // Enable drag-to-turn. Dragging off the cube orbits the view.
         onMove: (move) => debugPrint('turned $move'),
+        // Enable tap-to-select. Reports the front-most face under the tap.
+        onFaceTap: (face) => debugPrint('tapped $face'),
       ),
     );
   }
@@ -78,6 +81,7 @@ Buttons can drive the same controller:
 
 ```dart
 ElevatedButton(onPressed: () => controller.play(CubeMove.r), child: const Text('R'));
+ElevatedButton(onPressed: () => controller.play(CubeMove.r.inverse), child: const Text("R'"));
 ElevatedButton(onPressed: () => controller.scramble(), child: const Text('Scramble'));
 ElevatedButton(onPressed: controller.reset, child: const Text('Reset'));
 ElevatedButton(onPressed: controller.resetCamera, child: const Text('Recenter'));
@@ -89,6 +93,31 @@ Apply an algorithm as an animated sequence:
 controller.playSequence(const [
   CubeMove.r, CubeMove.u, CubeMove.ri, CubeMove.ui,
 ]);
+```
+
+Render a static, non-interactive cube:
+
+```dart
+Cube(controller: controller, enableGestures: false);
+```
+
+### Driving the controller
+
+```dart
+final controller = CubeController();
+
+controller.play(CubeMove.r);                 // queue one animated turn
+controller.playSequence(const [CubeMove.u]); // queue several
+controller.scramble(moves: 25, seed: 42);    // reproducible scramble
+controller.reset();                          // back to a solved cube
+controller.resetCamera();                    // restore the initial view
+controller.rotateView(dx: 0.1, dy: -0.05);   // orbit programmatically
+
+controller.isSolved;      // solved AND idle (nothing queued/animating)
+controller.isAnimating;   // a move is mid-animation
+controller.hasQueuedWork; // a move is animating or queued
+controller.pendingMove;   // the move currently animating, or null
+controller.state;         // the underlying RubiksCubeState
 ```
 
 ### Pure model (no widget)
@@ -103,25 +132,36 @@ print(cube.isSolved); // false
 final scrambled = RubiksCubeState.random(moves: 25, seed: 42);
 final json = scrambled.toJson();
 final restored = RubiksCubeState.fromJson(json);
+
+final cubie = cube.cubieAt(1, 1, 1); // the piece at a grid position
+```
+
+### Paint a cube ("colour my cube")
+
+```dart
+// Centres are fixed; every other sticker starts blank.
+final controller = CubeController(initialState: RubiksCubeState.colorless());
+
+controller.setStickerColor(
+  x: 1, y: 1, z: 1,
+  face: CubieFace.xPos,
+  color: CubeColors.green,
+); // ignored on centres and while a move is animating
+
+// Or replace the whole state at once.
+controller.replaceState(RubiksCubeState.solved());
 ```
 
 ### Validate a colouring
 
 ```dart
 const validator = CubeColorValidator();
-final result = validator.validate(cube);
+final result = validator.validate(controller.state);
 if (!result.isValid) {
   for (final issue in result.issues) {
-    debugPrint(issue.message);
+    debugPrint(issue.message); // e.g. "Green appears 8 times. Expected 9."
   }
 }
-```
-
-### Scan a face from a photo
-
-```dart
-const scanner = FaceColorScanner();
-final List<Color> stickers = scanner.classify(jpegBytes); // 9, row-major
 ```
 
 ## API reference
@@ -132,14 +172,16 @@ final List<Color> stickers = scanner.classify(jpegBytes); // 9, row-major
 | `RubiksCubeState.colorless()` | Centres fixed, every other sticker blank. |
 | `RubiksCubeState.random({moves, seed})` | Reproducible scramble. |
 | `applyMove(CubeMove)` | Apply one quarter-turn in place. |
+| `cubieAt(x, y, z)` | The cubie at a grid position, or null. |
+| `setStickerColor({x, y, z, face, color})` | Paint a sticker (centres are fixed). |
 | `isSolved`, `copy()`, `toJson()`/`fromJson()` | State helpers. |
 | `CubeMove` / `.inverse` | 12 outer + 6 slice moves, with inverses. |
 | `CubieModel`, `CubieFace` | A single cubie and its six faces. |
-| `CubeColors` | The six colours, palette and nearest-colour snapping. |
+| `CubeColors` | Six colours, `palette`, `nearest`, `nameOf`, `areOpposites`. |
 | `CubeController` | Drives the widget: queue moves, orbit, scramble, paint. |
-| `Cube` | The interactive 3D widget (`onMove`, `onFaceTap`). |
+| `Cube` | The interactive 3D widget (`onMove`, `onFaceTap`, `enableGestures`). |
 | `CubeColorValidator` | Real-cube colour validation. |
-| `FaceColorScanner` | Photo → 9 sticker colours. |
+| `CubeValidationResult`, `CubeValidationIssue` | Validation output. |
 | `cubeFaceAtTap`, `cubeDragFor`, `CubeDrag` | Low-level projection helpers. |
 | `CubieBuilder` | Builds the DiTreDi geometry for a cubie. |
 
