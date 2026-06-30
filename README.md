@@ -79,6 +79,8 @@ class _MyCubeState extends State<MyCube> {
 }
 ```
 
+![Interactive puzzle cube demo](img/puzzle_cube_gif.gif)
+
 Buttons can drive the same controller:
 
 ```dart

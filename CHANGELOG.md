@@ -15,3 +15,4 @@
 
 - Fix bug in example for drag to move not working
 - Map to public Github Repository
+- Adding gif
