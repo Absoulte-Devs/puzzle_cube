@@ -8,14 +8,14 @@ import 'cubie_model.dart';
 
 /// The full state of a 3x3 cube: its 27 [cubies] and the operations that turn
 /// layers, scramble, serialise and check for a solved state.
-class RubiksCubeState {
-  RubiksCubeState._(this.cubies);
+class PuzzleCubeState {
+  PuzzleCubeState._(this.cubies);
 
   /// The 27 cubies that make up the cube.
   final List<CubieModel> cubies;
 
   /// A cube in the standard solved colour scheme.
-  factory RubiksCubeState.solved() {
+  factory PuzzleCubeState.solved() {
     final cubies = <CubieModel>[];
     for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
@@ -24,12 +24,12 @@ class RubiksCubeState {
         }
       }
     }
-    return RubiksCubeState._(cubies);
+    return PuzzleCubeState._(cubies);
   }
 
   /// A cube with fixed centre colours and every other sticker left blank,
   /// used as the starting point for a "colour my cube" flow.
-  factory RubiksCubeState.colorless() {
+  factory PuzzleCubeState.colorless() {
     final cubies = <CubieModel>[];
     for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
@@ -38,13 +38,13 @@ class RubiksCubeState {
         }
       }
     }
-    return RubiksCubeState._(cubies);
+    return PuzzleCubeState._(cubies);
   }
 
   /// A solved cube scrambled by [moves] random outer turns. Pass a [seed] for a
   /// reproducible scramble.
-  factory RubiksCubeState.random({int moves = 25, int? seed}) {
-    final state = RubiksCubeState.solved();
+  factory PuzzleCubeState.random({int moves = 25, int? seed}) {
+    final state = PuzzleCubeState.solved();
     final rng = math.Random(seed);
     const all = [
       CubeMove.r, CubeMove.ri, CubeMove.l, CubeMove.li,
@@ -58,11 +58,11 @@ class RubiksCubeState {
   }
 
   /// Restores a cube from [toJson] output.
-  factory RubiksCubeState.fromJson(Map<String, dynamic> json) {
+  factory PuzzleCubeState.fromJson(Map<String, dynamic> json) {
     final cubies = (json['cubies'] as List)
         .map((e) => CubieModel.fromJson((e as Map).cast<String, dynamic>()))
         .toList();
-    return RubiksCubeState._(cubies);
+    return PuzzleCubeState._(cubies);
   }
 
   /// The cubie at grid position ([x], [y], [z]), or null if none matches.
@@ -95,8 +95,8 @@ class RubiksCubeState {
   }
 
   /// A deep copy of this cube state.
-  RubiksCubeState copy() {
-    return RubiksCubeState._(cubies.map((c) => c.copy()).toList());
+  PuzzleCubeState copy() {
+    return PuzzleCubeState._(cubies.map((c) => c.copy()).toList());
   }
 
   /// A JSON-serialisable snapshot of this cube state.

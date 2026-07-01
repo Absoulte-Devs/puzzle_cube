@@ -2,13 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:puzzle_cube/puzzle_cube.dart';
 
 void main() {
-  group('RubiksCubeState basics', () {
+  group('PuzzleCubeState basics', () {
     test('a fresh cube is solved', () {
-      expect(RubiksCubeState.solved().isSolved, isTrue);
+      expect(PuzzleCubeState.solved().isSolved, isTrue);
     });
 
     test('a single turn unsolves it; the inverse re-solves it', () {
-      final cube = RubiksCubeState.solved()..applyMove(CubeMove.r);
+      final cube = PuzzleCubeState.solved()..applyMove(CubeMove.r);
       expect(cube.isSolved, isFalse);
       cube.applyMove(CubeMove.ri);
       expect(cube.isSolved, isTrue);
@@ -16,7 +16,7 @@ void main() {
 
     test('every move has order 4', () {
       for (final move in CubeMove.values) {
-        final cube = RubiksCubeState.solved();
+        final cube = PuzzleCubeState.solved();
         for (var i = 0; i < 4; i++) {
           cube.applyMove(move);
         }
@@ -26,7 +26,7 @@ void main() {
 
     test('every move round-trips with its inverse', () {
       for (final move in CubeMove.values) {
-        final cube = RubiksCubeState.solved()
+        final cube = PuzzleCubeState.solved()
           ..applyMove(move)
           ..applyMove(move.inverse);
         expect(cube.isSolved, isTrue, reason: '$move');
@@ -34,16 +34,16 @@ void main() {
     });
 
     test('a seeded random scramble is reproducible', () {
-      final a = RubiksCubeState.random(moves: 30, seed: 7);
-      final b = RubiksCubeState.random(moves: 30, seed: 7);
+      final a = PuzzleCubeState.random(moves: 30, seed: 7);
+      final b = PuzzleCubeState.random(moves: 30, seed: 7);
       for (var i = 0; i < a.cubies.length; i++) {
         expect(a.cubies[i].faces, b.cubies[i].faces);
       }
     });
 
     test('toJson/fromJson round-trips a scrambled cube', () {
-      final cube = RubiksCubeState.random(moves: 20, seed: 3);
-      final restored = RubiksCubeState.fromJson(cube.toJson());
+      final cube = PuzzleCubeState.random(moves: 20, seed: 3);
+      final restored = PuzzleCubeState.fromJson(cube.toJson());
       for (var i = 0; i < cube.cubies.length; i++) {
         final a = cube.cubies[i];
         final b = restored.cubieAt(a.x, a.y, a.z)!;
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('centre stickers cannot be painted; others can', () {
-      final cube = RubiksCubeState.solved();
+      final cube = PuzzleCubeState.solved();
       expect(
         cube.setStickerColor(
           x: 1,

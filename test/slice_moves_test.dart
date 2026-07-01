@@ -14,7 +14,7 @@ void main() {
   group('slice moves', () {
     for (final move in slices) {
       test('$move has order 4 (four turns return to solved)', () {
-        final cube = RubiksCubeState.solved();
+        final cube = PuzzleCubeState.solved();
         for (var i = 0; i < 4; i++) {
           cube.applyMove(move);
         }
@@ -22,7 +22,7 @@ void main() {
       });
 
       test('$move followed by its inverse is the identity', () {
-        final cube = RubiksCubeState.solved()
+        final cube = PuzzleCubeState.solved()
           ..applyMove(move)
           ..applyMove(move.inverse);
         expect(cube.isSolved, isTrue);
@@ -30,8 +30,8 @@ void main() {
     }
 
     test('M only disturbs the middle x-slice (x = ±1 layers untouched)', () {
-      final solved = RubiksCubeState.solved();
-      final cube = RubiksCubeState.solved()..applyMove(CubeMove.m);
+      final solved = PuzzleCubeState.solved();
+      final cube = PuzzleCubeState.solved()..applyMove(CubeMove.m);
       for (final cubie in cube.cubies.where((c) => c.x != 0)) {
         final ref = solved.cubieAt(cubie.x, cubie.y, cubie.z)!;
         for (final entry in cubie.faces.entries) {
@@ -53,7 +53,7 @@ void main() {
         CubeMove.s,
         CubeMove.mi,
       ];
-      final cube = RubiksCubeState.solved();
+      final cube = PuzzleCubeState.solved();
       for (final m in moves) {
         cube.applyMove(m);
       }
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('M follows L: front-centre sticker lands on the down face', () {
-      final cube = RubiksCubeState.solved()..applyMove(CubeMove.m);
+      final cube = PuzzleCubeState.solved()..applyMove(CubeMove.m);
       // The old front-centre (0,0,1) carried its red zPos sticker; after M
       // (which follows L, front -> down on the middle column) it should now
       // show red on the yPos (down) face at (0,1,0).

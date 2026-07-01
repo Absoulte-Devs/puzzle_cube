@@ -85,7 +85,10 @@ class _HomePageState extends State<_HomePage> {
                   height: 320,
                   child: Cube(
                     controller: _controller,
-                    onMove: (move) => setState(() => _lastMove = move),
+                    onMove: (move) {
+                      _controller.applyMoveInstant(move);
+                      setState(() => _lastMove = move);
+                    },
                   ),
                 ),
               ),

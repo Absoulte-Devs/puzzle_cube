@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../models/cube_move.dart';
 import '../models/cubie_model.dart';
-import '../models/rubiks_cube_state.dart';
+import '../models/puzzle_cube_state.dart';
 import '../rendering/cube_hit_test.dart';
 import '../rendering/cubie_builder.dart';
 
@@ -20,10 +20,10 @@ class CubeController extends ChangeNotifier {
   /// [moveDuration] controls how long each animated turn takes.
   CubeController({
     this.moveDuration = const Duration(milliseconds: 350),
-    RubiksCubeState? initialState,
+    PuzzleCubeState? initialState,
     this.initialViewRotationX = 0,
     this.initialViewRotationY = 0,
-  })  : _state = initialState ?? RubiksCubeState.solved(),
+  })  : _state = initialState ?? PuzzleCubeState.solved(),
         _viewRotX = initialViewRotationX,
         _viewRotY = initialViewRotationY;
 
@@ -38,13 +38,13 @@ class CubeController extends ChangeNotifier {
 
   final Queue<CubeMove> _queue = Queue<CubeMove>();
 
-  RubiksCubeState _state;
+  PuzzleCubeState _state;
   CubeMove? _pending;
   double _viewRotX;
   double _viewRotY;
 
   /// The current cube state.
-  RubiksCubeState get state => _state;
+  PuzzleCubeState get state => _state;
 
   /// The move currently animating, or null if none.
   CubeMove? get pendingMove => _pending;
@@ -103,21 +103,21 @@ class CubeController extends ChangeNotifier {
   void reset() {
     _queue.clear();
     _pending = null;
-    _state = RubiksCubeState.solved();
+    _state = PuzzleCubeState.solved();
     notifyListeners();
   }
 
   /// Replaces the state with a random scramble of [moves] turns (see
-  /// [RubiksCubeState.random]).
+  /// [PuzzleCubeState.random]).
   void scramble({int moves = 25, int? seed}) {
     _queue.clear();
     _pending = null;
-    _state = RubiksCubeState.random(moves: moves, seed: seed);
+    _state = PuzzleCubeState.random(moves: moves, seed: seed);
     notifyListeners();
   }
 
   /// Paints a sticker (ignored while a move is animating). See
-  /// [RubiksCubeState.setStickerColor].
+  /// [PuzzleCubeState.setStickerColor].
   void setStickerColor({
     required int x,
     required int y,
@@ -132,7 +132,7 @@ class CubeController extends ChangeNotifier {
   }
 
   /// Replaces the entire cube state (ignored while a move is animating).
-  void replaceState(RubiksCubeState newState) {
+  void replaceState(PuzzleCubeState newState) {
     if (isAnimating) return;
 
     _queue.clear();

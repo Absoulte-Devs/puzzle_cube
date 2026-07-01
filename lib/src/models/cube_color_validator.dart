@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'cube_colors.dart';
 import 'cubie_model.dart';
-import 'rubiks_cube_state.dart';
+import 'puzzle_cube_state.dart';
 
 /// What part of the cube a [CubeValidationIssue] refers to.
 enum CubeValidationIssueType {
@@ -135,7 +135,7 @@ class CubeColorValidator {
   };
 
   /// Validates [cube] and returns the result.
-  CubeValidationResult validate(RubiksCubeState cube) {
+  CubeValidationResult validate(PuzzleCubeState cube) {
     final issues = <CubeValidationIssue>[];
 
     _validateCenters(cube, issues);
@@ -148,7 +148,7 @@ class CubeColorValidator {
     );
   }
 
-  void _validateCenters(RubiksCubeState cube, List<CubeValidationIssue> issues) {
+  void _validateCenters(PuzzleCubeState cube, List<CubeValidationIssue> issues) {
     for (final cubie in cube.cubies) {
       if (!_isCenter(cubie.x, cubie.y, cubie.z)) {
         continue;
@@ -170,7 +170,7 @@ class CubeColorValidator {
     }
   }
 
-  void _validatePieces(RubiksCubeState cube, List<CubeValidationIssue> issues) {
+  void _validatePieces(PuzzleCubeState cube, List<CubeValidationIssue> issues) {
     for (final cubie in cube.cubies) {
       if (_isCore(cubie.x, cubie.y, cubie.z) ||
           _isCenter(cubie.x, cubie.y, cubie.z)) {
@@ -265,7 +265,7 @@ class CubeColorValidator {
   }
 
   void _validateGlobalColorCounts(
-    RubiksCubeState cube,
+    PuzzleCubeState cube,
     List<CubeValidationIssue> issues,
   ) {
     final counts = <int, int>{

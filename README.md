@@ -9,7 +9,7 @@ The 3D rendering is built on [`ditredi`](https://pub.dev/packages/ditredi).
 
 ## Features
 
-- `RubiksCubeState` — a 3x3 cube model of 27 cubies.
+- `PuzzleCubeState` — a 3x3 cube model of 27 cubies.
   - All 12 outer quarter-turns plus the 3 middle slices (M/E/S), each direction.
   - Reproducible scrambles with a seedable RNG.
   - Solved-state detection, deep copy and JSON (de)serialisation.
@@ -68,9 +68,11 @@ class _MyCubeState extends State<MyCube> {
       child: Cube(
         controller: controller,
         // Enable drag-to-turn. Dragging off the cube orbits the view.
-        onMove: (move){
-          controller.applyMoveInstant(move),
-          debugPrint('turned $move'),}
+        // Commit the turn to the cube state (the gesture already showed it).
+        onMove: (move) {
+          controller.applyMoveInstant(move);
+          debugPrint('turned $move');
+        },
         // Enable tap-to-select. Reports the front-most face under the tap.
         onFaceTap: (face) => debugPrint('tapped $face'),
       ),
@@ -111,6 +113,7 @@ Cube(controller: controller, enableGestures: false);
 final controller = CubeController();
 
 controller.play(CubeMove.r);                 // queue one animated turn
+controller.applyMoveInstant(CubeMove.r);     // apply with no animation (commit a drag)
 controller.playSequence(const [CubeMove.u]); // queue several
 controller.scramble(moves: 25, seed: 42);    // reproducible scramble
 controller.reset();                          // back to a solved cube
@@ -121,21 +124,21 @@ controller.isSolved;      // solved AND idle (nothing queued/animating)
 controller.isAnimating;   // a move is mid-animation
 controller.hasQueuedWork; // a move is animating or queued
 controller.pendingMove;   // the move currently animating, or null
-controller.state;         // the underlying RubiksCubeState
+controller.state;         // the underlying PuzzleCubeState
 ```
 
 ### Pure model (no widget)
 
 ```dart
-final cube = RubiksCubeState.solved();
+final cube = PuzzleCubeState.solved();
 cube.applyMove(CubeMove.r);
 cube.applyMove(CubeMove.u);
 cube.applyMove(CubeMove.r.inverse); // R'
 print(cube.isSolved); // false
 
-final scrambled = RubiksCubeState.random(moves: 25, seed: 42);
+final scrambled = PuzzleCubeState.random(moves: 25, seed: 42);
 final json = scrambled.toJson();
-final restored = RubiksCubeState.fromJson(json);
+final restored = PuzzleCubeState.fromJson(json);
 
 final cubie = cube.cubieAt(1, 1, 1); // the piece at a grid position
 ```
@@ -144,7 +147,7 @@ final cubie = cube.cubieAt(1, 1, 1); // the piece at a grid position
 
 ```dart
 // Centres are fixed; every other sticker starts blank.
-final controller = CubeController(initialState: RubiksCubeState.colorless());
+final controller = CubeController(initialState: PuzzleCubeState.colorless());
 
 controller.setStickerColor(
   x: 1, y: 1, z: 1,
@@ -153,7 +156,7 @@ controller.setStickerColor(
 ); // ignored on centres and while a move is animating
 
 // Or replace the whole state at once.
-controller.replaceState(RubiksCubeState.solved());
+controller.replaceState(PuzzleCubeState.solved());
 ```
 
 ### Validate a colouring
@@ -172,10 +175,11 @@ if (!result.isValid) {
 
 | Class / member | Purpose |
 | --- | --- |
-| `RubiksCubeState.solved()` | A solved cube. |
-| `RubiksCubeState.colorless()` | Centres fixed, every other sticker blank. |
-| `RubiksCubeState.random({moves, seed})` | Reproducible scramble. |
+| `PuzzleCubeState.solved()` | A solved cube. |
+| `PuzzleCubeState.colorless()` | Centres fixed, every other sticker blank. |
+| `PuzzleCubeState.random({moves, seed})` | Reproducible scramble. |
 | `applyMove(CubeMove)` | Apply one quarter-turn in place. |
+| `CubeController.applyMoveInstant(CubeMove)` | Commit a move with no animation (used in `onMove`). |
 | `cubieAt(x, y, z)` | The cubie at a grid position, or null. |
 | `setStickerColor({x, y, z, face, color})` | Paint a sticker (centres are fixed). |
 | `isSolved`, `copy()`, `toJson()`/`fromJson()` | State helpers. |

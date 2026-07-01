@@ -16,3 +16,13 @@
 - Fix bug in example for drag to move not working
 - Map to public Github Repository
 - Adding gif
+
+## 0.1.2
+
+- Fix the demo gif in the README.
+
+## 0.2.0
+
+- Renamed `RubiksCubeState` to `PuzzleCubeState`.
+- Added pub.dev `topics` and dropped the `rubiks-cube` topic.
+- Added `applyMoveInstant` to table
