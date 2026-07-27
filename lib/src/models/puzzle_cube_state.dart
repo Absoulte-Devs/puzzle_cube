@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'cube_move.dart';
@@ -105,10 +104,21 @@ class PuzzleCubeState {
       };
 
   /// Whether every cubie matches the solved colour scheme for its position.
+  ///
+  /// Stickers are compared by ARGB value, not [Color] equality: the solved
+  /// reference uses `MaterialColor` constants whose `==` is runtimeType
+  /// sensitive, so a [PuzzleCubeState.fromJson]-restored cube (plain [Color]s)
+  /// would otherwise never report solved.
   bool get isSolved {
     for (final cubie in cubies) {
       final reference = CubieModel.solved(x: cubie.x, y: cubie.y, z: cubie.z);
-      if (!mapEquals(cubie.faces, reference.faces)) return false;
+      if (cubie.faces.length != reference.faces.length) return false;
+      for (final entry in reference.faces.entries) {
+        final color = cubie.faces[entry.key];
+        if (color == null || color.toARGB32() != entry.value.toARGB32()) {
+          return false;
+        }
+      }
     }
     return true;
   }

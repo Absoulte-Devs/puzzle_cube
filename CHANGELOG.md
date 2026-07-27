@@ -26,3 +26,10 @@
 - Renamed `RubiksCubeState` to `PuzzleCubeState`.
 - Added pub.dev `topics` and dropped the `rubiks-cube` topic.
 - Added `applyMoveInstant` to table
+
+## 0.2.1
+
+- Fix `isSolved` always returning false for a `PuzzleCubeState.fromJson`
+  restored cube: stickers are now compared by ARGB value instead of `Color`
+  equality (the solved reference uses `MaterialColor` constants, whose `==`
+  is runtimeType-sensitive).

@@ -41,6 +41,19 @@ void main() {
       }
     });
 
+    test('a JSON-restored solved cube still reports isSolved', () {
+      // fromJson rebuilds stickers as plain Colors; isSolved must compare by
+      // ARGB value, not Color identity (the reference uses MaterialColors).
+      final restored =
+          PuzzleCubeState.fromJson(PuzzleCubeState.solved().toJson());
+      expect(restored.isSolved, isTrue);
+
+      final scrambled = PuzzleCubeState.fromJson(
+        PuzzleCubeState.random(moves: 10, seed: 5).toJson(),
+      );
+      expect(scrambled.isSolved, isFalse);
+    });
+
     test('toJson/fromJson round-trips a scrambled cube', () {
       final cube = PuzzleCubeState.random(moves: 20, seed: 3);
       final restored = PuzzleCubeState.fromJson(cube.toJson());
